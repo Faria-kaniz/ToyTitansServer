@@ -6,7 +6,7 @@ const port = process.env.DB_PORT || 5000;
 app.use(cors());
 app.use(express.json());
 require('dotenv').config();
-
+const custom_datetime = require("./utility/custom_datetime");
 
 app.get("/", (req, res) => {
     res.send("Server is running");
@@ -41,6 +41,16 @@ async function run() {
 
             const cursor = toyCollection.find(query, options).limit(20);
             const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        // add new toy
+        app.post("/toy/add", async (req, res) => {
+            let todayDate = custom_datetime.curDate();
+
+            const toyData = req.body;
+            toyData.created_at = todayDate;
+            const result = await toyCollection.insertOne(toyData);
             res.send(result);
         });
     } finally {
