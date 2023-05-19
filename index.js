@@ -93,6 +93,14 @@ async function run() {
             );
             res.send(result);
         });
+
+        // delete a user
+        app.delete("/toy/:id", async (req, res) => {
+            const toyId = req.params.id;
+            const query = { _id: new ObjectId(toyId) };
+            const result = await toyCollection.deleteOne(query);
+            res.send(result);
+        });
     } finally {
         // await client.close();
     }
