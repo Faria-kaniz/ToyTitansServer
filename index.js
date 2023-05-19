@@ -29,17 +29,27 @@ async function run() {
             .collection("toys");
 
         // fetch all toys
-        app.get("/toys/:userId?", async (req, res) => {
-            const createdUserId = req.params.userId || 0;
+        app.get("/toys", async (req, res) => {
+            const createdUserId =
+                req.query && req.query.userId
+                    ? req.query.userId.toString()
+                    : "0";
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 20;
+            const skip = (page - 1) * limit;
+
             let query = {};
-            if (createdUserId != 0) {
+            if (createdUserId != "0") {
                 query = { created_by: createdUserId };
             }
             const options = {
                 sort: { created_at: -1 },
             };
 
-            const cursor = toyCollection.find(query, options).limit(20);
+            const cursor = toyCollection
+                .find(query, options)
+                .limit(limit)
+                .skip(skip);
             const result = await cursor.toArray();
             res.send(result);
         });
@@ -114,9 +124,9 @@ async function run() {
         // fetch toys after sorting
         app.get("/toys/:userId/:sortType", async (req, res) => {
             const createdUserId = req.params.userId;
-            const sortType = req.params.sortType == 'asc' ? 1 : -1;
+            const sortType = req.params.sortType == "asc" ? 1 : -1;
             let query = { created_by: createdUserId };
-            
+
             const options = {
                 sort: { price: sortType },
             };
