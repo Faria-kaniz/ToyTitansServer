@@ -61,6 +61,38 @@ async function run() {
             const toy = await toyCollection.findOne(query);
             res.send(toy);
         });
+
+        // update a toy
+        app.put("/toy/update/:id", async (req, res) => {
+            const id = req.params.id;
+            const toyData = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+
+            let todayDate = custom_datetime.curDate();
+
+            const updatedToy = {
+                $set: {
+                    picture: toyData.picture,
+                    name: toyData.name,
+                    seller_name: toyData.seller_name,
+                    seller_email: toyData.seller_email,
+                    sub_category: toyData.sub_category,
+                    price: toyData.price,
+                    rating: toyData.rating,
+                    quantity: toyData.quantity,
+                    description: toyData.description,
+                    created_at: todayDate,
+                    created_by: toyData.created_by,
+                },
+            };
+            const result = await toyCollection.updateOne(
+                filter,
+                updatedToy,
+                options
+            );
+            res.send(result);
+        });
     } finally {
         // await client.close();
     }
