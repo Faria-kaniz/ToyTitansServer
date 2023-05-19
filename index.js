@@ -53,6 +53,14 @@ async function run() {
             const result = await toyCollection.insertOne(toyData);
             res.send(result);
         });
+
+        // get information for particular toy
+        app.get("/toy/edit/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const toy = await toyCollection.findOne(query);
+            res.send(toy);
+        });
     } finally {
         // await client.close();
     }
