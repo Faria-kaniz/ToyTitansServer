@@ -27,8 +27,22 @@ async function run() {
         const toyCollection = client
             .db("action-figure-toys")
             .collection("toys");
-        console.log(toyCollection);
-        
+
+        // fetch all toys
+        app.get("/toys/:userId?", async (req, res) => {
+            const createdUserId = req.params.userId || 0;
+            let query = {};
+            if (createdUserId != 0) {
+                query = { created_by: createdUserId };
+            }
+            const options = {
+                sort: { created_at: -1 },
+            };
+
+            const cursor = toyCollection.find(query, options).limit(20);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
     } finally {
         // await client.close();
     }
