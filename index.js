@@ -110,6 +110,21 @@ async function run() {
             const toy = await toyCollection.find(query).limit(20).toArray();
             res.send(toy);
         });
+
+        // fetch toys after sorting
+        app.get("/toys/:userId/:sortType", async (req, res) => {
+            const createdUserId = req.params.userId;
+            const sortType = req.params.sortType == 'asc' ? 1 : -1;
+            let query = { created_by: createdUserId };
+            
+            const options = {
+                sort: { price: sortType },
+            };
+
+            const cursor = toyCollection.find(query, options).limit(20);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
     } finally {
         // await client.close();
     }
