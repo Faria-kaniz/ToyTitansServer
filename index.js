@@ -101,6 +101,15 @@ async function run() {
             const result = await toyCollection.deleteOne(query);
             res.send(result);
         });
+
+        // get information by name searching
+        app.get("/toy/search/:keyword", async (req, res) => {
+            const name = req.params.keyword;
+            const regexPattern = new RegExp(name, "i");
+            const query = { name: regexPattern };
+            const toy = await toyCollection.find(query).limit(20).toArray();
+            res.send(toy);
+        });
     } finally {
         // await client.close();
     }
