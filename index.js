@@ -28,7 +28,7 @@ async function run() {
             .db("action-figure-toys")
             .collection("toys");
 
-        // fetch all toys
+        // fetch all toys with limit
         app.get("/toys", async (req, res) => {
             const createdUserId =
                 req.query && req.query.userId
@@ -50,6 +50,19 @@ async function run() {
                 .find(query, options)
                 .limit(limit)
                 .skip(skip);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        // fetch all toys
+        app.get("/all-toys", async (req, res) => {
+            const query = {};
+            const options = {
+                sort: { created_at: -1 },
+            };
+
+            const cursor = toyCollection
+                .find(query, options);
             const result = await cursor.toArray();
             res.send(result);
         });
